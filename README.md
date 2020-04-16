@@ -1,5 +1,6 @@
 # Module Launcher .Net
 
++ [简体中文文档](https://github.com/AHpxChina/ModuleLauncher/blob/master/README_CN.md)
 + Module launcher is a Minecraft launch core written in C#
 
 + Develop environment: Visual Studio 2019 on Windows 10 1809
