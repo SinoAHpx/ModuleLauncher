@@ -1,22 +1,22 @@
 # Module Launcher .Net
 
-+ Module launcher is a Minecraft launch core written in C#
++ Module launcher是一个使用C#编写的Minecraft启动核心
 
-+ Develop environment: Visual Studio 2019 on Windows 10 1809
++ 开发环境: Visual Studio 2019 在Windows 10 1809上
 
-### Introduction
+### 介绍
 
-+ This library based on EPL edition [ModuleLauncher](https://www.mcbbs.net/thread-815868-1-1.html) and remake with C#.
++ 本库基于易语言版[ModuleLauncher](https://www.mcbbs.net/thread-815868-1-1.html)使用C#重写
 
-+ Support all version Minecraft launch
-+ Offline authenticator and Mojang authenticator
-+ Get Assets and Libraries information
-+ Auto get Java list
-+ **More** in future
++ 支持所有的Minecraft版本
++ 正版账号验证
++ 获取资源文件和库文件信息
++ 自动获取Java列表
++ 以后会**更多**
 
-### Document
+### 文档
 
-+ ##### Mojang Authenticator
++ ##### 正版账户验证
 
 ```
 MojangAuthenticator mojangAuthenticator = new MojangAuthenticator
@@ -29,7 +29,7 @@ AuthResult authResult = mojangAuthenticator.Auth();
 
 ---
 
-+ Offline Authenticator
++ 离线账户验证r
 
 ```c#
 OfflineAuthenticator offlineAuthenticator = new OfflineAuthenticator
@@ -41,7 +41,7 @@ AuthResult authResult = offlineAuthenticator.Auth();
 
 ---
 
-+ Initialize launch core
++ 初始化启动核心
 
 ```c#
 Global.LaunchConfiguation = new LaunchConfiguation
@@ -61,7 +61,7 @@ Global.LaunchConfiguation = new LaunchConfiguation
 };
 ```
 
-+ Launch Minecraft
++ 启动Minecraft
 
 ```C#
 LaunchCore launchCore = new LaunchCore();
