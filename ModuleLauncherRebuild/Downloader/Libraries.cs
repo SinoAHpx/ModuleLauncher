@@ -1,6 +1,9 @@
 ﻿using ModuleLauncherRebuild.Launcher.Json;
 using ModuleLauncherRebuild.Tools;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +17,13 @@ namespace ModuleLauncherRebuild.Downloader
         public string DownloadUri { get; set; }
         public string FileName { get; set; }
     }
+    //public class LibrariesModule
+    //{
+    //    public string path { get; set; }
+    //    public string sha1 { get; set; }
+    //    public int size { get; set; }
+    //    public string url { get; set; }
+    //}
     public static class Libraries
     {
         public static string GetLibraries()
@@ -119,19 +129,7 @@ namespace ModuleLauncherRebuild.Downloader
                 {
                     re += $"{Global.LaunchConfiguation.MinecraftSetting.MinecraftSource}\\libraries\\{versionJson.libraries[i].downloads.artifact.path};".Replace("/", "\\");
                 }
-                catch (Exception)
-                {
-                    try
-                    {
-                        re += $"{Global.LaunchConfiguation.MinecraftSetting.MinecraftSource}\\libraries\\{versionJson.libraries[i].downloads.classifiers.natives_windows.path};".Replace("/", "\\");
-                    }
-                    catch (Exception)
-                    {
-
-                        if (SystemTools.Isx64()) re += $"{Global.LaunchConfiguation.MinecraftSetting.MinecraftSource}\\libraries\\{versionJson.libraries[i].downloads.classifiers.natives_windows_64.path};".Replace("/", "\\");
-                        else re += $"{Global.LaunchConfiguation.MinecraftSetting.MinecraftSource}\\libraries\\{versionJson.libraries[i].downloads.classifiers.natives_windows_32.path};".Replace("/", "\\");
-                    }
-                }
+                catch{}
             }
             return re;
         }
@@ -144,9 +142,8 @@ namespace ModuleLauncherRebuild.Downloader
                 try
                 {
                     re += $"{Global.LaunchConfiguation.MinecraftSetting.MinecraftSource}\\libraries\\{versionJson.libraries[i].downloads.artifact.path};".Replace("/", "\\");
-                    re += $"{Global.LaunchConfiguation.MinecraftSetting.MinecraftSource}\\libraries\\{versionJson.libraries[i].downloads.classifiers.natives_windows.path};".Replace("/", "\\");
                 }
-                catch (Exception) { }
+                catch {}
             }
             return re;
         }
@@ -165,7 +162,17 @@ namespace ModuleLauncherRebuild.Downloader
                     re += $"{item};";
                 }
             }
-            return GetLibraries_Vanilla() + re;
+            String vanilla = String.Empty;
+            switch (GetClientType(versionJsonVanilla))
+            {
+                case 2:
+                    vanilla = GetLibraries_VanillaHigh();
+                    break;
+                case 0:
+                    vanilla = GetLibraries_Vanilla();
+                    break;
+            }
+            return vanilla + re;
         }
         private static string GetLibraries_Optifine()
         {
@@ -183,16 +190,17 @@ namespace ModuleLauncherRebuild.Downloader
                 }
             }
             Console.WriteLine(GetClientType(versionJsonVanilla));
+            String vanilla = String.Empty;
             switch (GetClientType(versionJsonVanilla))
             {
-                case 0:
-                    return GetLibraries_Vanilla() + re;
                 case 2:
-                    return GetLibraries_VanillaHigh() + re;
-                default:
-                    return re;
+                    vanilla = GetLibraries_VanillaHigh();
+                    break;
+                case 0:
+                    vanilla = GetLibraries_Vanilla();
+                    break;
             }
-
+            return vanilla + re;
         }
 
         /// <summary>

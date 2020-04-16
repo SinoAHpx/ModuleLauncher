@@ -1,10 +1,14 @@
 ﻿using ModuleLauncherRebuild.Downloader;
 using ModuleLauncherRebuild.Launcher.Json;
 using ModuleLauncherRebuild.Tools;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,10 +93,78 @@ namespace ModuleLauncherRebuild.Launcher
 
             return process.StandardOutput;
         }
-        public StreamReader Launch()
+        private List<String> RemoveRepeat(List<String> src)
         {
+            List<String> re = src;
+            for (int i = 0; i < re.Count; i++)
+            {
+                string istr = re[i];
+                for (int j = re.IndexOf(istr) + 1; j < re.Count; j++)
+                {
+                    string jstr = re[j];
+                    if (istr == jstr)
+                    {
+                        re.Remove(jstr);
+                    }
+                }
+            }
+            return re;
+        }
+        public void ExtraNatives()
+        {
+            String MinecraftPath = $"{Global.LaunchConfiguation.MinecraftSetting.MinecraftSource}";
+            String VersionPath = $"{MinecraftPath}\\versions\\{Global.LaunchConfiguation.MinecraftSetting.VersionJson.id}";
+            String jsonName = $"{VersionPath}\\{Global.LaunchConfiguation.MinecraftSetting.VersionJson.id}.json";
+            String jsonText = File.ReadAllText(jsonName);
+
+            List<String> re = new List<string>();
+            LibrariesProperty librariesProperty = JsonConvert.DeserializeObject<LibrariesProperty>(jsonText);
+            foreach (var item in librariesProperty.libraries) { try { if (File.Exists($"{MinecraftPath}\\libraries\\{item.downloads.classifiers.natives_windows.path}".Replace("/", "\\"))) re.Add($"{MinecraftPath}\\libraries\\{item.downloads.classifiers.natives_windows.path}".Replace("/", "\\")); } catch { }}
+            foreach (var item in librariesProperty.libraries) { try {if (File.Exists($"{MinecraftPath}\\libraries\\{item.downloads.classifiers.natives_Windows_64.path}".Replace("/", "\\"))) re.Add($"{MinecraftPath}\\libraries\\{item.downloads.classifiers.natives_Windows_64.path}".Replace("/", "\\")); } catch { } }
+            foreach (var item in librariesProperty.libraries) { try {if (File.Exists($"{MinecraftPath}\\libraries\\{item.downloads.classifiers.natives_Windows_32.path}".Replace("/", "\\"))) re.Add($"{MinecraftPath}\\libraries\\{item.downloads.classifiers.natives_Windows_32.path}".Replace("/", "\\")); } catch { } }
+
+            foreach (var item in RemoveRepeat(re))
+            {
+                Console.WriteLine("File name: "+ item);
+                try { ZipFile.ExtractToDirectory(item, $"{VersionPath}\\{Global.LaunchConfiguation.MinecraftSetting.VersionJson.id}-natives"); } catch { }
+            }
+        }
+        public StreamReader Launch(bool AutoExtraNatives = true)
+        {
+            if (AutoExtraNatives)
+            {
+                ExtraNatives();
+            }
             String args = GenerateLaunchArgs();
             return Excute(Global.LaunchConfiguation.JavaSetting.JavaPath, args);
         }
+    }
+    public class LibrariesProperty
+    {
+        public List<DownloadProperty> libraries { get; set; }
+    }
+    public class DownloadProperty
+    {
+        public Classifiers downloads { get; set; }
+    }
+    public class Classifiers
+    { 
+        public ClassifierPropertys classifiers { get; set; }
+    }
+    public class ClassifierPropertys
+    {
+        [JsonProperty("natives-windows")]
+        public NativesInfo natives_windows { get; set; }
+        [JsonProperty("natives-windows-64")]
+        public NativesInfo natives_Windows_64 { get; set; }
+        [JsonProperty("natives-windows-32")]
+        public NativesInfo natives_Windows_32 { get; set; }
+    }
+    public class NativesInfo
+    {
+        public string path { get; set; }
+        public string sha1 { get; set; }
+        public string size { get; set; }
+        public string url { get; set; }
     }
 }

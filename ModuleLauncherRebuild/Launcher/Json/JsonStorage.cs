@@ -83,6 +83,7 @@ namespace ModuleLauncherRebuild.Launcher.Json
     public class VerJson_libraries_downloads
     {
         public VerJson_libraries_downloads_artifact artifact { get; set; }
+        [JsonIgnore]
         public VerJson_libraries_classifiers classifiers { get; set; }
     }
     public class VerJson_libraries_downloads_artifact

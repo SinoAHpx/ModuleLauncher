@@ -35,10 +35,10 @@ namespace ConsoleApp1
                 {
                     LauncherName = "Tets",
                     MinecraftSource = @"D:\Minecraft\Solution1\.minecraft",
-                    VersionJson = JsonStorage.ParseVersionJson(@"D:\Minecraft\Solution1\.minecraft\versions\1.15.2")
+                    VersionJson = JsonStorage.ParseVersionJson(@"D:\Minecraft\Solution1\.minecraft\versions\1.8.9")
                 }
             };
-            foreach (var item in await Assets.GetAssetsInfosAsync())
+            foreach (var item in Libraries.GetExistLibraries())
             {
                 Console.WriteLine(item.DownloadUri);
                 Console.WriteLine(item.FileName);
@@ -46,7 +46,7 @@ namespace ConsoleApp1
             LaunchCore launchCore = new LaunchCore();
             String argss = launchCore.GenerateLaunchArgs();
             Console.WriteLine(argss);
-            launchCore.Launch();
+            launchCore.ExtraNatives();
             
             
 
